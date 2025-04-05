@@ -25,12 +25,17 @@ if (key == ConsoleKey.Enter)
         if (input == ConsoleKey.C)
             Console.SetCursorPosition(0, 0);
 
-        var total = rnd.Next(1, 91);
+        var maxStreamLength = 91;
+        var total = rnd.Next(1, maxStreamLength);
         var nextStream = string.Empty;
-        for (int i = 0; i < total; i++)
+        for (int i = 0; i < maxStreamLength; i++)
         {
-            var character = rnd.Next(33, 10000);
-            nextStream += (char)character;
+            var min = (maxStreamLength / 2) - (total / 2); 
+            var max = (maxStreamLength / 2) + (total / 2);
+            if (i < min || i > max) 
+                nextStream += " ";
+            else
+                nextStream += (char)rnd.Next(33, 10000);
         }
         var color = rnd.Next(0, 15);
         Console.ForegroundColor = (ConsoleColor)color;
@@ -39,10 +44,6 @@ if (key == ConsoleKey.Enter)
         if (input == ConsoleKey.M)
         {
             Console.SetCursorPosition(Console.GetCursorPosition().Left, Console.GetCursorPosition().Top + 1);
-        }
-        else
-        {
-            Console.Write(new string(' ', Console.WindowWidth));
         }
         Thread.Sleep(100);
         input = ConsoleKey.None;
