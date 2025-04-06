@@ -3,6 +3,7 @@ using System.Text;
 using static System.Net.Mime.MediaTypeNames;
 
 int depth = 5000;
+int depthWin = 50000;
 List<char> thoughts = new List<char>();
 while (true)
 {
@@ -19,12 +20,15 @@ while (true)
         Console.SetCursorPosition(0, 0);
         var input = ConsoleKey.None;
         var lastWidth = 1;
-        var scaling = 4;
-        Task.Run(() => Console.Beep(136, depth));
+        var scaling = 6;
+        var pitch = 136;
+        Task.Run(() => Console.Beep(pitch, depth));
         var elapsed = 0;
         var tick = 100;
         var thought = ' ';
         var tempDepth = 0;
+
+        Task? soundTask = null;
         while (elapsed < depth)
         {
             if (Console.KeyAvailable)
@@ -32,7 +36,14 @@ while (true)
                 var tempInput = Console.ReadKey(true).Key;
                 var influenceScale = rnd.Next(31, 1000);
                 thought = (char)(influenceScale);
+                if (thought < 37) thought = (char)37;
+                soundTask = Task.Run(() => Console.Beep(thought, 100));
                 thoughts.Add(thought);
+            }
+            if (soundTask != null && soundTask.IsCompleted)
+            {
+                soundTask = null;
+                Task.Run(() => Console.Beep(pitch, depth));
             }
 
             var maxStreamLength = lastWidth + scaling;
@@ -49,9 +60,17 @@ while (true)
                 else
                 {
                     var nextChar = (char)rnd.Next(31, 1000);
-                    nextStream += nextChar;
+                    //If I want an end but maybe just want to capture all characters
+                    //if (depth > depthWin)
+                    //    nextChar = (char)0x03A9;
                     if (thoughts.Contains(nextChar))
-                        tempDepth += 100;
+                    {
+                        nextChar = (char)0x03A9;
+                        tempDepth += 10;
+                    }
+
+
+                    nextStream += nextChar;
                 }
             }
             SetRndTextColor();
@@ -64,6 +83,7 @@ while (true)
             elapsed += tick;
         }
         depth += tempDepth;
+        soundTask = null;
     }
 }
 void Draw(string text)
