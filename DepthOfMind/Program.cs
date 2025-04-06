@@ -97,11 +97,15 @@ void Draw(string text)
 void DrawMenu()
 {
     var rnd = new Random();
+    var titleText = "Depth of Mind\n";
+    Console.SetCursorPosition(Console.WindowWidth / 2 - (titleText.Length / 2), Console.WindowHeight / 2);
+    Console.WriteLine(titleText);
     var enterText = "Press Enter to meditate.";
     var cursorPosition = Console.GetCursorPosition();
-    Console.SetCursorPosition(Console.WindowWidth / 2 - (enterText.Length / 2), Console.WindowHeight / 2);
-    Console.WriteLine(enterText);
     Console.SetCursorPosition(Console.WindowWidth / 2 - (enterText.Length / 2), Console.GetCursorPosition().Top);
+    Console.WriteLine(enterText);
+    var depthText = $"Depth: {depth}";
+    Console.SetCursorPosition(Console.WindowWidth / 2 - (depthText.Length / 2), Console.GetCursorPosition().Top);
     Console.WriteLine($"Depth: {depth}");
     foreach (var thought in thoughts)
     {
