@@ -1,32 +1,43 @@
 ﻿using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
-Draw("Press Enter to meditate");
-var key = Console.ReadKey().Key;
+int depth = 5000;
+start:
 Console.Clear();
+Console.SetCursorPosition(0, 0);
+DrawMenu();
+var key = Console.ReadKey().Key;
 Console.OutputEncoding = Encoding.UTF8;
 Console.CursorVisible = false;
 var rnd = new Random();
 if (key == ConsoleKey.Enter)
 {
-    //for (int i = 10; i > 0; i--)
-    //{
-    //    var random = new Random();
-    //    var roll = random.Next((i + 1) * 37, 1000);
-    //    Console.Beep(roll, 100);
-    //}
+    Console.Clear();
+    Console.SetCursorPosition(0, 0);
     var input = ConsoleKey.None;
-    while (input != ConsoleKey.Enter)
+    var lastWidth = 1;
+    var scaling = 4;
+    var keyPressed = false;
+    Task.Run(() => Console.Beep(136, depth));
+    var elapsed = 0;
+    var tick = 100;
+    while (input != ConsoleKey.Enter && elapsed < depth)
     {
-        if(Console.KeyAvailable)
+        if (Console.KeyAvailable)
         {
-            input = Console.ReadKey(true).Key;
+            if (!keyPressed)
+            {
+                keyPressed = true;
+                input = Console.ReadKey(true).Key;
+            }
         }
+        else
+            keyPressed = false;
 
-        if (input == ConsoleKey.C)
-            Console.SetCursorPosition(0, 0);
-
-        var maxStreamLength = 91;
-        var total = rnd.Next(1, maxStreamLength);
+            var maxStreamLength = lastWidth + scaling;
+        var minStreamLength = lastWidth - scaling;
+        if (minStreamLength <= 0) minStreamLength = 1;
+        var total = rnd.Next(minStreamLength, maxStreamLength);
         var nextStream = string.Empty;
         for (int i = 0; i < maxStreamLength; i++)
         {
@@ -41,13 +52,15 @@ if (key == ConsoleKey.Enter)
         Console.ForegroundColor = (ConsoleColor)color;
         Draw(nextStream);
         Console.SetCursorPosition(Console.GetCursorPosition().Left, Console.GetCursorPosition().Top - 1);
-        if (input == ConsoleKey.M)
-        {
-            Console.SetCursorPosition(Console.GetCursorPosition().Left, Console.GetCursorPosition().Top + 1);
-        }
-        Thread.Sleep(100);
-        input = ConsoleKey.None;
+        Console.SetCursorPosition(Console.GetCursorPosition().Left, Console.GetCursorPosition().Top + 1);
+        lastWidth = total;
+
+        Task.Delay(tick).Wait();
+        elapsed += tick;
+        if(input != ConsoleKey.Enter)
+            input = ConsoleKey.None;
     }
+    goto start;
 }
 
 void Draw(string text)
@@ -55,4 +68,14 @@ void Draw(string text)
     var cursorPosition = Console.GetCursorPosition();
     Console.SetCursorPosition(Console.WindowWidth / 2 - (text.Length / 2), cursorPosition.Top);
     Console.WriteLine(text);
+}
+
+void DrawMenu()
+{
+    var enterText = "Press Enter to meditate.";
+    var cursorPosition = Console.GetCursorPosition();
+    Console.SetCursorPosition(Console.WindowWidth / 2 - (enterText.Length / 2), Console.WindowHeight / 2);
+    Console.WriteLine(enterText);
+    Console.SetCursorPosition(Console.WindowWidth / 2 - (enterText.Length / 2), Console.GetCursorPosition().Top);
+    Console.WriteLine($"Depth: {depth}");
 }
