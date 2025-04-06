@@ -20,27 +20,20 @@ while (true)
         var input = ConsoleKey.None;
         var lastWidth = 1;
         var scaling = 4;
-        var keyPressed = false;
         Task.Run(() => Console.Beep(136, depth));
         var elapsed = 0;
         var tick = 100;
         var thought = ' ';
+        var tempDepth = 0;
         while (elapsed < depth)
         {
             if (Console.KeyAvailable)
             {
-                if (!keyPressed)
-                {
-                    keyPressed = true;
-                    input = Console.ReadKey(true).Key;
-                }
                 var tempInput = Console.ReadKey(true).Key;
-                var influenceScale = rnd.Next(100, 10000);
-                thought = (char)(tempInput + influenceScale);
+                var influenceScale = rnd.Next(31, 1000);
+                thought = (char)(influenceScale);
                 thoughts.Add(thought);
             }
-            else
-                keyPressed = false;
 
             var maxStreamLength = lastWidth + scaling;
             var minStreamLength = lastWidth - scaling;
@@ -55,10 +48,10 @@ while (true)
                     nextStream += " ";
                 else
                 {
-                    var nextChar = (char)rnd.Next(33, 10000);
+                    var nextChar = (char)rnd.Next(31, 1000);
                     nextStream += nextChar;
                     if (thoughts.Contains(nextChar))
-                        depth += 100;
+                        tempDepth += 100;
                 }
             }
             SetRndTextColor();
@@ -69,10 +62,8 @@ while (true)
 
             Task.Delay(tick).Wait();
             elapsed += tick;
-            if (input != ConsoleKey.Enter)
-                input = ConsoleKey.None;
         }
-        Task.Delay(tick).Wait();
+        depth += tempDepth;
     }
 }
 void Draw(string text)
