@@ -29,6 +29,7 @@ while (true)
         var tempDepth = 0;
 
         Task? soundTask = null;
+        Task? ohmSoundTask = null;
         while (elapsed < depth)
         {
             if (Console.KeyAvailable)
@@ -43,7 +44,7 @@ while (true)
             if (soundTask != null && soundTask.IsCompleted)
             {
                 soundTask = null;
-                Task.Run(() => Console.Beep(pitch, depth));
+                ohmSoundTask = Task.Run(() => Console.Beep(pitch, depth - elapsed));
             }
 
             var maxStreamLength = lastWidth + scaling;
